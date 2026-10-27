@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>School Homework Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f0f0f0; }
+        .box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 200px; height: 40px; text-align: right; font-size: 20px; margin-bottom: 10px; }
+        button { width: 50px; height: 50px; font-size: 18px; margin: 5px; cursor: pointer; }
+        .game-btn { width: auto; height: auto; padding: 10px 20px; font-size: 16px; background: #333; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. THE INNOCENT CALCULATOR (Everyone sees this first) -->
+    <div id="calculatorUI" class="box">
+        <h3>Math Tool v1.4</h3>
+        <input type="text" id="display" readonly placeholder="0"><br>
+        <button onclick="press('1')">1</button>
+        <button onclick="press('2')">2</button>
+        <button onclick="press('3')">3</button><br>
+        <button onclick="press('a')">a</button>
+        <button onclick="press('b')">b</button>
+        <button onclick="press('c')">c</button><br>
+        <button onclick="clr()" style="background:#ffbcbc;">C</button>
+    </div>
+
+    <!-- 2. THE SECRET TEXT GAME (Hidden until code is typed) -->
+    <div id="gameUI" class="box" style="display: none; background: #1a1a1a; color: #00ff00; width: 400px; text-align: left;">
+        <h3>🕵️ Underworld Text RPG</h3>
+        <hr style="border-color: #00ff00;">
+        <p><strong>Player Stats:</strong></p>
+        <p>💵 Cash: $<span id="cash">100</span></p>
+        <p>⚡ Energy: <span id="energy">100</span>/100</p>
+        <p id="log" style="color: yellow; font-style: italic;">Welcome back to the streets...</p>
+        <hr style="border-color: #00ff00;">
+        <button class="game-btn" onclick="doCrime('Search Pockets', 10, 15)">Search Pockets (-10 Energy)</button>
+        <button class="game-btn" onclick="doCrime('Rob a House', 30, 150)">Rob House (-30 Energy)</button>
+        <button class="game-btn" onclick="train()" style="background: #0055ff;">Gym Train (-20 Energy)</button>
+    </div>
+
+    <script>
+        // --- PASSCODE LOGIC ---
+        function press(num) {
+            let d = document.getElementById('display');
+            d.value += num;
+            
+            // The 1000-IQ Check: If they type the secret code
+            if (d.value.includes("abccba")) {
+                document.getElementById('calculatorUI').style.display = 'none'; // Poof! Calculator gone
+                document.getElementById('gameUI').style.display = 'inline-block'; // Boom! Game appears
+                d.value = "";
+            }
+        }
+        function clr() { document.getElementById('display').value = ""; }
+
+        // --- BASIC TEXT GAME LOGIC ---
+        let playerCash = 100;
+        let playerEnergy = 100;
+
+        function doCrime(crimeName, energyCost, payout) {
+            if (playerEnergy >= energyCost) {
+                playerEnergy -= energyCost;
+                playerCash += payout;
+                document.getElementById('log').innerText = `Success! You managed to ${crimeName} and made $${payout}.`;
+                updateUI();
+            } else {
+                document.getElementById('log').innerText = "You are too exhausted! Go rest.";
+            }
+        }
+
+        function train() {
+            if (playerEnergy >= 20) {
+                playerEnergy -= 20;
+                document.getElementById('log').innerText = "You trained at the gym. Energy spent!";
+                updateUI();
+            } else {
+                document.getElementById('log').innerText = "Not enough energy to train.";
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('cash').innerText = playerCash;
+            document.getElementById('energy').innerText = playerEnergy;
+        }
+
+        // Passively regenerate energy over time just like Torn! (Every 5 seconds for testing)
+        setInterval(() => {
+            if (playerEnergy < 100) {
+                playerEnergy = Math.min(100, playerEnergy + 5);
+                updateUI();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
